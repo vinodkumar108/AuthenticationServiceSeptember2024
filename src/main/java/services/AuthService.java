@@ -1,5 +1,8 @@
 package services;
 
+import exceptions.UserAlreadyExistsException;
+import exceptions.UserNotFoundException;
+import exceptions.WrongPasswordException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import repositories.UserRepository;
 
@@ -45,11 +48,11 @@ public class AuthService {
         return password;
     }
 
-    public boolean login(String email, String password) throws UsernameNotFoundException
+    public boolean login(String email, String password) throws UserNotFoundException, WrongPasswordException
     {
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isEmpty()) {
-            throw new UsernameNotFoundException("User with email: " + email + " not found");
+            throw new UserNotFoundException("User with email: " + email + " not found");
         }
         boolean matches = password.equals(userOptional.get().getPassword());
         if (matches) {
@@ -58,7 +61,7 @@ public class AuthService {
         else {
             throw new WrongPasswordException("Wrong password.");
         }
-        return false;
+
     }
 
 

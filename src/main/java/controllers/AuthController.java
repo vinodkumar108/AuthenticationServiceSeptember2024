@@ -2,8 +2,15 @@ package controllers;
 
 import dtos.LoginRequestDto;
 import dtos.SignupRequestDto;
+import dtos.RequestStatus;
+import dtos.LoginResponseDto;
+import dtos.SignUpResponseDto;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,10 +32,14 @@ public class AuthController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<SignupRequestDto> signup(@RequestBody SignupRequestDto request) {
+    public ResponseEntity<SignUpResponseDto> signup(@RequestBody SignupRequestDto request) {
+
+        SignUpResponseDto response = new SignUpResponseDto();
+
         try {
             if (authService.signUp(request.getEmail(), request.getPassword())) {
                 response.setRequestStatus(RequestStatus.SUCCESS);
+
             } else {
                 response.setRequestStatus(RequestStatus.FAILURE);
             }
@@ -41,13 +52,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginRequestDto> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto request) {
+
+        LoginResponseDto response = new LoginResponseDto();
+
         try {
             authService.login(request.getEmail(), request.getPassword());
             response.setRequestStatus(RequestStatus.SUCCESS);
-            return new ResponseEntity<>(
-                    response , HttpStatus.OK
-            );
+            return new ResponseEntity<>(response , HttpStatus.OK);
         } catch (Exception e) {
             response.setRequestStatus(RequestStatus.FAILURE);
             return new ResponseEntity<>(
@@ -57,8 +69,4 @@ public class AuthController {
 
     }
 
-    @PostMapping("/logout")
-    public void logout(@RequestBody LogoutRequestDto logoutRequestDto) {
-
-    }
 }
